@@ -1,0 +1,132 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class w_color {
+    + w_uint8 r;
+    + w_uint8 g;
+    + w_uint8 b;
+}
+
+class w_rectangle_component {
+    + w_int32 x;
+    + w_int32 y;
+    + w_uint32 width;
+    + w_uint32 height;
+    + w_color color;
+}
+
+class w_sprite_component {
+    + w_int32 x;
+    + w_int32 y;
+    + w_uint32 width;
+    + w_uint32 height;
+    + w_int8 texture[64]
+}
+
+class w_vector {
+    - void* data;
+    - w_size_t data_type
+    - w_size_t size;
+    - w_size_t capacity;
+
+    + w_vector* new_w_vector(w_size_t data_type);
+    + void delete_w_vector(w_vector* vector);
+    + void w_vector_push_back(w_vector* vector, void* element);
+    + void w_vector_insert_at(const w_vector *vector, const w_size_t index, const void *element);
+    + void w_vector_pop_back(w_vector* vector);
+    + void* w_vector_element_at(w_vector* vector, w_size_t index);
+    + void* w_vector_front(w_vector* vector);
+    + void* w_vector_back(w_vector* vector);
+    + void* w_vector_get_data(w_vector* vector);
+    + void w_vector_resize(w_vector* vector, w_size_t new_size);
+    + w_size_t w_vector_get_size(w_vector* vector);
+    + w_size_t w_vector_get_capacity(w_vector* vector);
+    + void w_vector_erase(w_vector* vector);
+    + w_bool w_vector_is_empty(w_vector* vector);
+}
+
+class w_hash_map {
+    - w_vector*<w_vector*> map;
+    - w_size_t data_type;
+
+    + w_hash_map* new_w_hash_map(w_size_t data_type);
+    + void delete_w_hash_map(w_hash_map* hash_map);
+    + void w_hash_map_insert_at(w_hash_map* hash_map, w_size_t index, void* element);
+    + void w_hash_map_delete_at(w_hash_map* hash_map, w_size_t index);
+    + w_vector w_hash_map_element_at(w_hash_map* hash_map, w_size_t index);
+    + void w_hash_map_resize(w_hash_map* hash_map, w_size_t new_size);
+    + w_size_t w_hash_map_get_size(w_hash_map* hash_map);
+    + w_size_t w_hash_map_get_capacity(w_hash_map* hash_map);
+    + void w_hash_map_erase(w_hash_map* hash_map);
+    + w_bool w_hash_map_is_empty(w_hash_map* hash_map);
+}
+
+
+class w_renderer {
+    - w_hash_map* rectangles_map;
+    - w_hash_map* sprite_map;
+
+    + w_renderer* new_w_renderer();
+    + void destroy_w_renderer(w_renderer* renderer);
+    + void w_renderer_update(w_renderer* renderer);
+    + void attach_rectangle_component_to_w_entity(w_renderer* renderer, w_entity* entity, w_rectangle_component rect);
+    + void attach_sprite_component_to_w_entity(w_renderer* renderer, w_entity* entity, w_sprite_component sprite);
+}
+
+class w_keys_code {
+}
+
+class w_mouse_button {
+}
+
+class w_input {
+    - w_bool frame_keys[WE_MAX_KEYS]
+    - w_bool last_frame_keys[WE_MAX_KEYS]
+    - w_bool mouse_buttons_keys[WE_MAX_MOUSE_BUTTONS_KEYS]
+    - w_bool last_mouse_buttons_keys[WE_MAX_MOUSE_BUTTONS_KEYS]
+    - w_real mouse_position[2];
+
+    + w_input* new_w_input();
+    + void destroy_w_input(w_input* input);
+    + void w_input_update(w_input* input);
+    + w_bool is_key_pressed(w_input* input, w_keys_code key_code);
+    + w_bool is_key_release(w_input* input, w_keys_code key_code);
+    + w_bool is_key_down(w_input* input, w_keys_code key_code);
+    + w_bool is_mouse_button_pressed(w_input* input, w_mouse_code mouse_code);
+    + w_bool is_mouse_button_release(w_input* input, w_mouse_code mouse_code);
+    + w_bool is_mouse_button_down(w_input* input, w_mouse_code mouse_code);
+}
+
+class w_entity {
+    - w_uint32 id;
+    - w_int8 name[64];
+    - void (*start)(w_entity* entity, w_scene* scene);
+    - void (*update)(w_entity* entity, w_scene* scene);
+    - w_bool alive;
+
+    + w_entity* new_w_entity(w_uint32 id, const w_int8 *name,
+                               void (*start)(w_entity* entity, w_scene* scene),
+                               void (*update)(w_entity* entity, w_scene* scene));
+    + void destroy_w_entity(w_entity* entity);
+    + void w_entity_start(w_entity* entity, w_scene* scene);
+    + void w_entity_update(w_entity* entity, w_scene* scene);
+    + w_bool is_w_entity_alive(w_entity* entity);
+}
+
+class w_scene {
+    - w_int8 name[64]
+    - w_uint32 entity_counter;
+    - w_vector<w_entity> entities;
+    - w_renderer* renderer;
+    - w_input* input;
+    - void (*start)(Scene* scene);
+    - void (*update)(Scene* scene);
+
+    + w_scene* new_w_scene(const w_int8 *name, void (*start)(w_scene* scene), void (*update)(w_scene* scene));
+    + void add_entity_to_w_scene(w_scene* scene, const w_uint8* name, void (*start)(w_entity* entity, w_scene* scene),
+                                 void (*update)(w_entity* entity, w_scene* scene));
+    + void delete_entity_in_w_scene(w_scene* scene, const w_uint8* name);
+    + void destroy_w_scene(w_scene* scene);
+}
+
+@enduml
