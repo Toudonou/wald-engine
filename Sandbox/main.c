@@ -58,7 +58,7 @@ void rect_entity_update(we_uint32 entity_id, we_entity *entity, we_scene *scene)
         direction.y = 1;
     }
 
-    direction = we_vec2_normalized(direction);
+    if (we_vec2_square_length(direction)) direction = we_vec2_normalized(direction);
     velocity = we_vec2_scalar_mul(direction, speed);
 
     entity->transform.position = we_vec2_add(entity->transform.position, velocity);
@@ -77,7 +77,7 @@ void scene_update(we_scene *scene) {
         WE_WARN("Trying to update a NULL we_scene");
         return;
     }
-    const we_input* input = we_scene_get_input(scene);
+    const we_input *input = we_scene_get_input(scene);
     if (we_input_is_key_down(input, ESCAPE)) {
         we_scene_quit(scene);
     }
